@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>MTG Deck combiner thing</h1>
+    <h3 id="messageOutput">Choose decks to combine</h3>
+
+    <form enctype="multipart/form-data" id="form">
+        <input id="upload" type=file multiple accept="text/plain" name="files[]" size=30>
+        <select id="orderingOptions" onchange="orderingChanged()" >  
+            <option>No Ordering</option>
+            <option>Alphabetical</option>
+            <option>Duplicates</option>
+            <option>Duplicates Alphabetical</option>
+        </select>   
+        <button type="submit">Submit</button>           
+        <button type="reset">Reset</button>           
+    </form>
+        
+        <textarea class="form-control" rows=35 cols=120 id="outputText"></textarea>
+        
+        <script src="process.js"></script>
+</body>
+</html>
+
