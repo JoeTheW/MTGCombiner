@@ -21,6 +21,7 @@ function orderingChanged()
 function handleFileSelect(evt) 
 {
     reset();
+    clearInformation();
 
     let files = evt.files; // FileList object
 
@@ -89,6 +90,17 @@ function handleFiles( files )
     document.getElementById( "messageOutput" ).innerHTML = message;
   }
 
+  function addInformation( message )
+  {
+    message = message+"<br>";
+    document.getElementById( "information" ).innerHTML += message;
+  }
+
+  function clearInformation()
+  {
+    document.getElementById( "information" ).innerHTML = null;
+  }
+
   function processFileContents( content )
   {
     // console.log( "Input", content );
@@ -110,11 +122,41 @@ function handleFiles( files )
 
   function processLines( lines )
   {
+    showMessage("Processing...");
+
     for (let index = 0; index < lines.length; index++) {
         const cardString = lines[index];
+
+        //Validate line has content
+        if ( cardString == null || cardString == "" || cardString.length < 0 )
+        {
+          let errorMessage = `Ignoring empty line: ${index}.`;
+          // addInformation(errorMessage);
+          console.warn(errorMessage)
+          continue;
+        }
+
         let split = cardString.split(" ");
         let number = split[0];
         let name = cardString.substring(number.length);
+
+        //Validate number
+        if ( number == null || number == "" || number.length < 0 || !isNumeric( number ) )
+        {
+          let errorMessage = `Ignoring line ${index} - Invalid card count: '${cardString}'`;
+          addInformation(errorMessage);
+          console.warn(errorMessage)
+          continue;
+        }
+
+        //Validate name
+        if ( name == null || name == "" || name.length < 0 || isNumeric( name ) )
+        {
+          let errorMessage = `Ignoring line ${index} - Invalid card name: '${cardString}'`;
+          addInformation(errorMessage);
+          console.warn(errorMessage)
+          continue;
+        }
 
         // console.log( number );
         // console.log( name );
@@ -188,4 +230,10 @@ function handleFiles( files )
   {
     // console.log( "Output", content );
     document.getElementById( "outputText" ).innerHTML = content;
+  }
+
+  function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+           !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
   }
