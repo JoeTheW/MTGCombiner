@@ -6,8 +6,12 @@
 <body>
 
     <h1>MTG Deck combiner thing</h1>
-    <h3 id="messageOutput">Choose decks to combine</h3>
-    <p id="information"></p>
+    <h2 id="messageOutput">Choose decks to combine</h2>
+
+    <div hidden id="log">
+    <p><strong>Log</strong></p>
+    <textarea rows=5 cols=120 id="information"></textarea>
+    </div>
 
     <form enctype="multipart/form-data" id="form">
         <input id="upload" type=file multiple accept="text/plain" name="files[]" size=30>
@@ -21,7 +25,7 @@
         <button type="reset">Reset</button>           
     </form>
         
-        <textarea class="form-control" rows=35 cols=120 id="outputText"></textarea>
+        <textarea class="form-control" rows=15 cols=120 id="outputText"></textarea>
         
         <script src="process.js"></script>
 </body>

@@ -9,6 +9,10 @@ form.addEventListener("submit", (evt) => {
 
 let nameNumberDict = {};
 let ordering = "No Ordering"
+let currentFile = -1;
+let processedFiles = -1;
+let totalFiles = -1;
+let logToConsole = false;
 
 function orderingChanged()
 {  
@@ -30,6 +34,7 @@ function handleFileSelect(evt)
 
 function handleFiles( files )
 {
+
  // use the 1st file from the list
     // let f = files[0];
     if ( files == null || files.length <= 0 )
@@ -37,6 +42,8 @@ function handleFiles( files )
         showMessage("ERROR: No files selected!");
         return document;
     }
+
+    showMessage("Processing, please wait...");
 
     for (let index = 0; index < files.length; index++)
      {
@@ -46,16 +53,26 @@ function handleFiles( files )
         {
             return document;
         }
+
+        totalFiles ++;
         
         let reader = new FileReader();
 
         // Closure to capture the file information.
         reader.onload = (function(theFile) {
             return function(e) {
+
+            currentFile ++;
+            showMessage(`Processing file ${currentFile} : ${theFile.name}`);
+            addInformation(`Processing File ${currentFile} : ${theFile.name}`);
             
             let fileContents = e.target.result;
             processFileContents( fileContents );
+            processedFiles ++;
+            addInformationIndented(1,`File ${currentFile} processed`);
 
+            let waitMessage = processedFiles < totalFiles ? " - please wait..." : ".";
+            showMessage( `${processedFiles}/${totalFiles} decks combined${waitMessage}` );
             };
         })(file);
 
@@ -68,6 +85,9 @@ function handleFiles( files )
   function reset()
   {
     nameNumberDict = {};
+    currentFile = 0;
+    processedFiles = 0;
+    totalFiles = 0;
     showOutput("");
     showMessage( "Choose decks to combine" );
   }
@@ -86,19 +106,30 @@ function handleFiles( files )
 
   function showMessage( message )
   {
-    console.log( message );
+    consoleLog( null, message );
     document.getElementById( "messageOutput" ).innerHTML = message;
+  }
+
+  function addInformationIndented( indent, message )
+  {
+    for (let index = 0; index < indent; index++) {
+      message = "  " + message;
+    }
+
+    addInformation( message );
   }
 
   function addInformation( message )
   {
-    message = message+"<br>";
+    message = message+"\n";
     document.getElementById( "information" ).innerHTML += message;
+    document.getElementById( "log" ).hidden = false;
   }
 
   function clearInformation()
   {
     document.getElementById( "information" ).innerHTML = null;
+    document.getElementById( "log" ).hidden = true;
   }
 
   function processFileContents( content )
@@ -122,17 +153,20 @@ function handleFiles( files )
 
   function processLines( lines )
   {
-    showMessage("Processing...");
+    showMessage("Processing, please wait...");
 
     for (let index = 0; index < lines.length; index++) {
         const cardString = lines[index];
+
+        // console.log(`Processing file ${currentFile}, line ${index}`);
+        // showMessage(`Processing file ${currentFile}, line ${index}`);
 
         //Validate line has content
         if ( cardString == null || cardString == "" || cardString.length < 0 )
         {
           let errorMessage = `Ignoring empty line: ${index}.`;
-          // addInformation(errorMessage);
-          console.warn(errorMessage)
+          // addInformationIndented(1, errorMessage);
+          // consoleWarn(null, errorMessage);
           continue;
         }
 
@@ -144,8 +178,8 @@ function handleFiles( files )
         if ( number == null || number == "" || number.length < 0 || !isNumeric( number ) )
         {
           let errorMessage = `Ignoring line ${index} - Invalid card count: '${cardString}'`;
-          addInformation(errorMessage);
-          console.warn(errorMessage)
+          addInformationIndented(1, errorMessage);
+          consoleWarn(null, errorMessage);
           continue;
         }
 
@@ -153,8 +187,8 @@ function handleFiles( files )
         if ( name == null || name == "" || name.length < 0 || isNumeric( name ) )
         {
           let errorMessage = `Ignoring line ${index} - Invalid card name: '${cardString}'`;
-          addInformation(errorMessage);
-          console.warn(errorMessage)
+          addInformationIndented(1, errorMessage);
+          consoleWarn(null, errorMessage);
           continue;
         }
 
@@ -223,7 +257,6 @@ function handleFiles( files )
     }
 
     showOutput( finalString );
-    showMessage( "Decks combined." );
   }
 
   function showOutput( content )
@@ -236,4 +269,20 @@ function handleFiles( files )
     if (typeof str != "string") return false // we only process strings!  
     return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+  }
+
+  function consoleLog( note, message )
+  {
+    if ( logToConsole )
+    {
+      console.log( note != null ? note : "", message );
+    }
+  }
+
+  function consoleWarn( note, message )
+  {
+    if ( logToConsole )
+    {
+      console.warn( note != null ? note : "", message );
+    }
   }
