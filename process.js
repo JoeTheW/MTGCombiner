@@ -44,6 +44,7 @@ function handleFiles( files )
     }
 
     showMessage("Processing, please wait...");
+    setGlobalCursor( "wait" );
 
     for (let index = 0; index < files.length; index++)
      {
@@ -88,6 +89,7 @@ function handleFiles( files )
     currentFile = 0;
     processedFiles = 0;
     totalFiles = 0;
+    setGlobalCursor( "auto" );
     showOutput("");
     showMessage( "Choose decks to combine" );
   }
@@ -153,7 +155,8 @@ function handleFiles( files )
 
   function processLines( lines )
   {
-    showMessage("Processing, please wait...");
+    // showMessage("Processing, please wait...");
+    setGlobalCursor( "wait" );
 
     for (let index = 0; index < lines.length; index++) {
         const cardString = lines[index];
@@ -256,6 +259,7 @@ function handleFiles( files )
         finalString += cardString + "\n";
     }
 
+    setGlobalCursor( "auto" );
     showOutput( finalString );
   }
 
@@ -285,4 +289,12 @@ function handleFiles( files )
     {
       console.warn( note != null ? note : "", message );
     }
+  }
+
+  function setGlobalCursor( style )
+  {
+    const cursorStyle = document.createElement('style');
+    cursorStyle.innerHTML = `*{cursor: ${style}!important;}`;
+    cursorStyle.id = 'cursor-style';
+    document.head.appendChild(cursorStyle);
   }
