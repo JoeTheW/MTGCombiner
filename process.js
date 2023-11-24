@@ -7,6 +7,9 @@ form.addEventListener("submit", (evt) => {
     handleFileSelect(evt.currentTarget[0]);
   });
 
+  //TODO: Handle JSON
+  //TODO: Handle different formats of txt
+
 let nameNumberDict = {};
 let ordering = "No Ordering"
 let currentFile = -1;
