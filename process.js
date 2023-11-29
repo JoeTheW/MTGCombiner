@@ -17,6 +17,8 @@ let processedFiles = -1;
 let totalFiles = -1;
 let logToConsole = false;
 
+let totalCards = -1;
+
 function orderingChanged()
 {  
     var orderingOptions = document.getElementById("orderingOptions");
@@ -74,6 +76,7 @@ function handleFiles( files )
             processFileContents( fileContents );
             processedFiles ++;
             addInformationIndented(1,`File ${currentFile} processed`);
+            addInformationIndented(1,`${totalCards} cards total`);
 
             let waitMessage = processedFiles < totalFiles ? " - please wait..." : ".";
             showMessage( `${processedFiles}/${totalFiles} decks combined${waitMessage}` );
@@ -92,6 +95,7 @@ function handleFiles( files )
     currentFile = 0;
     processedFiles = 0;
     totalFiles = 0;
+    totalCards = 0;
     setGlobalCursor( "auto" );
     showOutput("");
     showMessage( "Choose decks to combine" );
@@ -207,6 +211,8 @@ function handleFiles( files )
         }
 
         nameNumberDict[name] += Number( number );
+
+        totalCards += Number( number );
     }
 
     // console.log( nameNumberDict );
